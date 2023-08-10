@@ -92,7 +92,7 @@ class PredictHandler(tornado.web.RequestHandler):
 
         # 读取sent.txt文件中的第一句作为预测结果展示
 
-        with open("../sent.txt", "r", encoding="utf-8") as f:
+        with open("../sent_1.txt", "r", encoding="utf-8") as f:
             content = [_.strip().replace(' ', '') for _ in f.readlines()]
 
         sent = content[0]
@@ -204,7 +204,7 @@ def main():
     app = tornado.web.Application(
             handlers=[(r'/query', QueryHandler),
                       (r'/predict', PredictHandler)
-                      ], #网页路径控制
+                      ],  # 网页路径控制
             template_path=os.path.join(os.path.dirname(__file__), "templates")  # 模板路径
           )
     http_server = tornado.httpserver.HTTPServer(app)

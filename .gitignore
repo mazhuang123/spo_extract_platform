@@ -5,3 +5,5 @@ sent_bak.txt
 useful_website.txt
 tmp_graph11
 *.log
+.idea/
+*.iml

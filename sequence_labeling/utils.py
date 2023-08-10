@@ -165,7 +165,7 @@ def convert_to_text(line):
 
 def save_model(sess, model, path, logger, global_steps):
     checkpoint_path = os.path.join(path, "ner.ckpt")
-    model.saver.save(sess, checkpoint_path, global_step = global_steps)
+    model.saver.save(sess, checkpoint_path, global_step=global_steps)
     logger.info("model saved")
 
 
@@ -176,8 +176,8 @@ def create_model(session, Model_class, path, config, logger):
     ckpt = tf.train.get_checkpoint_state(path)
     if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path):
         logger.info("Reading model parameters from %s" % ckpt.model_checkpoint_path)
-        #saver = tf.train.import_meta_graph('ckpt/ner.ckpt.meta')
-        #saver.restore(session, tf.train.latest_checkpoint("ckpt/"))
+        # saver = tf.train.import_meta_graph('ckpt/ner.ckpt.meta')
+        # saver.restore(session, tf.train.latest_checkpoint("ckpt/"))
         model.saver.restore(session, ckpt.model_checkpoint_path)
     else:
         logger.info("Created model with fresh parameters.")

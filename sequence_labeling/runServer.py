@@ -91,7 +91,7 @@ class AsyncResultHandler(tornado.web.RequestHandler):
         event = self.get_argument('event')
         result = yield self.function(event)
         self.write(json.dumps(result))
-        #self.write(str(round(t2 - t1, 4)))
+        # self.write(str(round(t2 - t1, 4)))
 
     @tornado.concurrent.run_on_executor
     def function(self, event):
@@ -109,7 +109,7 @@ def main():
                       (r'/subj_extract', ResultHandler),
                       (r'/async_subj_extract', AsyncResultHandler),
                       (r'/hello', HelloHandler),
-                     ], #网页路径控制
+                      ],  # 网页路径控制
            )
     http_server = tornado.httpserver.HTTPServer(app)
     http_server.listen(options.port)

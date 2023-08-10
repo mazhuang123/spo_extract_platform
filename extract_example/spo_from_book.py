@@ -7,12 +7,11 @@ import requests
 import pandas as pd
 from tqdm import tqdm
 from pyltp import SentenceSplitter
-
+import  config
 # 小说的名称
-book_name = 'santi'
 
 # txt文件读取
-with open('./corpus/%s.txt' % book_name, 'r', encoding='UTF-16') as f:
+with open(config.book_path, 'r', encoding='UTF-8') as f:
     content = f.read()
 
 sents = [_.strip().replace(" ", "") for _ in list(SentenceSplitter.split(content)) if _.strip()]
@@ -20,35 +19,66 @@ sents = [_.strip().replace(" ", "") for _ in list(SentenceSplitter.split(content
 
 # 逐句抽取并保留抽取结果至列表中
 texts = []
-subjs, preds, objs = [], [], []
+subject_list, times_list, spo_dic_list = [], [], []
+spo_result_list = []
+
+def isExistInSpoList(sub):
+    for temp_spo in spo_result_list:
+        if temp_spo['subject'] == sub or temp_spo['subject'] in sub or sub in temp_spo['subject']:
+            temp_spo["times"]+=1
+            return True,spo_result_list.index(temp_spo)
+    return False,None
 
 bar = tqdm(sents)
 for ch, line in zip(bar, sents):
-
     req = requests.post("http://localhost:12308/spo_extract", data={"text": line})
     res = json.loads(req.content)
 
     if res:
         print("\n原文: %s" % line)
-        print("SPO: %s" % res)
-
         for item in res:
-            subj = item["subject"]
+            spo_dic = {}
+            subj = item["object"]
             pred = item["predicate"]
-            obj = item["object"]
+            obj = item["subject"]
 
-            if subj != obj:
-                subjs.append(subj)
-                preds.append(pred)
-                objs.append(obj)
-                texts.append(line)
+            spo_dic["S"] = subj
+            spo_dic["P"] = pred
+            spo_dic["O"] = obj
+            isExist, temp_spo_index= isExistInSpoList(subj)
+            if isExist:
+                spo_result_list[temp_spo_index]['spo'].append(spo_dic)
 
+            else:
+                new_sub_dic = {}
+                new_sub_dic['subject'] = subj
+                new_sub_dic['times'] = 1
+                single_spo_list = []
+                single_spo_list.append(spo_dic)
+                new_sub_dic['spo'] = single_spo_list
+                spo_result_list.append(new_sub_dic)
+
+for single_spo in spo_result_list:
+    subject_list.append(single_spo['subject'])
+    times_list.append(single_spo['times'])
+    spo_dic_list.append(single_spo['spo'])
+
+filter_list = times_list
+for temp_times in filter_list:
+    if temp_times<=3:
+        index  = filter_list.index(temp_times)
+        subject_list.pop(index)
+        times_list.pop(index)
+        spo_dic_list.pop(index)
+print(subject_list)
+print(times_list)
+print(spo_dic_list)
 # 将抽取的三元组结果保存成EXCEL文件
 
-df = pd.DataFrame({"S": subjs,
-                   "P": preds,
-                   "O": objs,
-                   "text": texts
+df = pd.DataFrame({"subject": subject_list,
+                   "times": times_list,
+                   "spo_dic": spo_dic_list,
                    })
 
-df.to_excel("./excels/%s.xlsx" % book_name, index=False)
+df.to_excel(config.excel_path, index=False)
+

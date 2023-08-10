@@ -16,37 +16,37 @@ from data_utils import BatchManager
 project_dir = os.path.dirname(os.path.abspath(__file__))
 
 flags = tf.app.flags
-flags.DEFINE_boolean("clean",       False,      "clean train folder")
-flags.DEFINE_boolean("train",       False,      "Wither train the model")
+flags.DEFINE_boolean("clean", False, "clean train folder")
+flags.DEFINE_boolean("train", False, "Wither train the model")
 # configurations for the model
-flags.DEFINE_integer("batch_size",  8,        "batch size")
-flags.DEFINE_integer("seg_dim",     20,         "Embedding size for segmentation, 0 if not used")
-flags.DEFINE_integer("char_dim",    100,        "Embedding size for characters")
-flags.DEFINE_integer("lstm_dim",    100,        "Num of hidden units in LSTM")
-flags.DEFINE_string("tag_schema",   "iob",      "tagging schema iobes or iob")
+flags.DEFINE_integer("batch_size", 8, "batch size")
+flags.DEFINE_integer("seg_dim", 20, "Embedding size for segmentation, 0 if not used")
+flags.DEFINE_integer("char_dim", 100, "Embedding size for characters")
+flags.DEFINE_integer("lstm_dim", 100, "Num of hidden units in LSTM")
+flags.DEFINE_string("tag_schema", "iob", "tagging schema iobes or iob")
 
 # configurations for training
-flags.DEFINE_float("clip",          5,          "Gradient clip")
-flags.DEFINE_float("dropout",       0.5,        "Dropout rate")
-flags.DEFINE_float("lr",            0.001,      "Initial learning rate")
-flags.DEFINE_string("optimizer",    "adam",     "Optimizer for training")
-flags.DEFINE_boolean("zeros",       False,      "Wither replace digits with zero")
-flags.DEFINE_boolean("lower",       True,       "Wither lower case")
+flags.DEFINE_float("clip", 5, "Gradient clip")
+flags.DEFINE_float("dropout", 0.5, "Dropout rate")
+flags.DEFINE_float("lr", 0.001, "Initial learning rate")
+flags.DEFINE_string("optimizer", "adam", "Optimizer for training")
+flags.DEFINE_boolean("zeros", False, "Wither replace digits with zero")
+flags.DEFINE_boolean("lower", True, "Wither lower case")
 
-flags.DEFINE_integer("max_seq_len", 128,        "max sequence length for bert")
-flags.DEFINE_integer("max_epoch",   100,        "maximum training epochs")
-flags.DEFINE_integer("steps_check", 100,        "steps per checkpoint")
-flags.DEFINE_string("ckpt_path",    "%s/ckpt" % project_dir,      "Path to save model")
-flags.DEFINE_string("summary_path", "%s/summary" % project_dir,      "Path to store summaries")
-flags.DEFINE_string("log_file",     "%s/train.log" % project_dir,    "File for log")
-flags.DEFINE_string("map_file",     "%s/maps.pkl" % project_dir,     "file for maps")
-flags.DEFINE_string("vocab_file",   "%s/vocab.json" % project_dir,   "File for vocab")
-flags.DEFINE_string("config_file",  "%s/config_file" % project_dir,  "File for config")
-flags.DEFINE_string("script",       "%s/conlleval" % project_dir,    "evaluation script")
-flags.DEFINE_string("result_path",  "%s/result" % project_dir,       "Path for results")
-flags.DEFINE_string("train_file",   os.path.join("%s/data" % project_dir, "spo.train"),  "Path for train data")
-flags.DEFINE_string("dev_file",     os.path.join("%s/data" % project_dir, "spo.dev"),    "Path for dev data")
-flags.DEFINE_string("test_file",    os.path.join("%s/data" % project_dir, "spo.test"),   "Path for test data")
+flags.DEFINE_integer("max_seq_len", 128, "max sequence length for bert")
+flags.DEFINE_integer("max_epoch", 100, "maximum training epochs")
+flags.DEFINE_integer("steps_check", 100, "steps per checkpoint")
+flags.DEFINE_string("ckpt_path", "%s/ckpt" % project_dir, "Path to save model")
+flags.DEFINE_string("summary_path", "%s/summary" % project_dir, "Path to store summaries")
+flags.DEFINE_string("log_file", "%s/train.log" % project_dir, "File for log")
+flags.DEFINE_string("map_file", "%s/maps.pkl" % project_dir, "file for maps")
+flags.DEFINE_string("vocab_file", "%s/vocab.json" % project_dir, "File for vocab")
+flags.DEFINE_string("config_file", "%s/config_file" % project_dir, "File for config")
+flags.DEFINE_string("script", "%s/conlleval" % project_dir, "evaluation script")
+flags.DEFINE_string("result_path", "%s/result" % project_dir, "Path for results")
+flags.DEFINE_string("train_file", os.path.join("%s/data" % project_dir, "spo.train"), "Path for train data")
+flags.DEFINE_string("dev_file", os.path.join("%s/data" % project_dir, "spo.dev"), "Path for dev data")
+flags.DEFINE_string("test_file", os.path.join("%s/data" % project_dir, "spo.test"), "Path for test data")
 
 FLAGS = tf.app.flags.FLAGS
 assert FLAGS.clip < 5.1, "gradient clip should't be too much"
@@ -102,8 +102,8 @@ def train():
     test_sentences = load_sentences(FLAGS.test_file, FLAGS.lower, FLAGS.zeros)
 
     # Use selected tagging scheme (IOB / IOBES)
-    #update_tag_scheme(train_sentences, FLAGS.tag_schema)
-    #update_tag_scheme(test_sentences, FLAGS.tag_schema)
+    # update_tag_scheme(train_sentences, FLAGS.tag_schema)
+    # update_tag_scheme(test_sentences, FLAGS.tag_schema)
 
     # create maps if not exist
     if not os.path.isfile(FLAGS.map_file):
@@ -162,7 +162,7 @@ def train():
                     iteration = step // steps_per_epoch + 1
                     logger.info("iteration:{} step:{}/{}, "
                                 "NER loss:{:>9.6f}".format(
-                        iteration, step%steps_per_epoch, steps_per_epoch, np.mean(loss)))
+                        iteration, step % steps_per_epoch, steps_per_epoch, np.mean(loss)))
                     loss = []
 
             best = evaluate(sess, model, "dev", dev_manager, id_to_tag, logger)
