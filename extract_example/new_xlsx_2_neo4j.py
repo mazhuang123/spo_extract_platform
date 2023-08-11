@@ -22,6 +22,8 @@ matcher = NodeMatcher(graph)
 
 
 
+
+
 for temp_list in df['spo_dic']:
     value_str = str(temp_list)
     value_str = value_str.replace("'",'"')
